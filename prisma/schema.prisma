@@ -32,9 +32,9 @@ model Event {
 model Participant {
   id      Int   @id @default(autoincrement())
   userId  Int
-  eventId Int
-  event   Event @relation(fields: [eventId], references: [id])
+  eventsId Int
+  event   Event @relation(fields: [eventsId], references: [id])
   user    User  @relation(fields: [userId], references: [id])
 
-  @@unique([userId, eventId])
+  @@unique([userId, eventsId])
 }
