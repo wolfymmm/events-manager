@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import authRoutes from './routes/auth.routes';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -10,11 +11,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/auth', authRoutes);
 
-// Перевірка з'єднання
 app.get('/test-db', async (req, res) => {
   try {
-    // Пробуємо отримати кількість користувачів
     const userCount = await prisma.user.count();
     res.json({ message: "Database is connected!", users: userCount });
   } catch (error) {

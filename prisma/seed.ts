@@ -3,8 +3,6 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🚀 ТЕСТ: Скрипт розпочав роботу...')
-
   const user = await prisma.user.upsert({
     where: { email: 'tereshchuk.max@gmail.com' },
     update: {},
@@ -28,10 +26,9 @@ async function main() {
   console.log('✅ Подія додана успішно!')
 }
 
-// ЦЕ НАЙВАЖЛИВІША ЧАСТИНА. БЕЗ НЕЇ ФУНКЦІЯ main() НЕ ЗАПУСТИТЬСЯ
 main()
   .then(async () => {
-    console.log('🏁 Сід завершено!')
+    console.log('Сід завершено!')
     await prisma.$disconnect()
   })
   .catch(async (e) => {
