@@ -25,16 +25,16 @@ model Event {
   capacity     Int?
   isPublic     Boolean       @default(true)
   organizerId  Int
-  organizer    User          @relation("Organizer", fields: [organizerId], references: [id])
+  organizer    User          @relation("Organizer", fields: [organizerId], references: [id], onDelete: Cascade)
   participants Participant[]
 }
 
 model Participant {
-  id      Int   @id @default(autoincrement())
-  userId  Int
+  id       Int   @id @default(autoincrement())
+  userId   Int
   eventsId Int
-  event   Event @relation(fields: [eventsId], references: [id])
-  user    User  @relation(fields: [userId], references: [id])
+  event    Event @relation(fields: [eventsId], references: [id], onDelete: Cascade)
+  user     User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventsId])
 }

@@ -1,33 +1,38 @@
 import { NextFunction, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { CreateEventDto } from '../dtos/event.dto';
+import { JoinEventDto } from '../dtos/participant.dto';
 
 const prisma = new PrismaClient();
 
-import { CreateEventDto } from '../schemas/event.schema';
+export const createEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const data: CreateEventDto = req.body;
+    const userId = req.user?.userId;
 
-const getUserId = (req: Request) => req.user?.userId;
-
-export const createEvent = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    try {
-        const data: CreateEventDto = req.body;
-        const userId = getUserId(req);
-
-        if (!userId) {
-            return res.status(401).json({ message: 'Unauthorized: No user found' });
-        }
-
-        const event = await prisma.event.create({ 
-            data: { 
-                ...data, 
-                date: new Date(data.date), 
-                organizerId: userId  
-            } 
-        });
-
-        res.status(201).json(event);
-    } catch (error) {
-        next(error); 
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized: No user found' });
     }
+
+    const event = await prisma.event.create({
+      data: {
+        ...data,
+        date: new Date(data.date),
+
+        organizer: {
+          connect: { id: userId }
+        }
+      }
+    });
+
+    res.status(201).json(event);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getEvents = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
@@ -81,7 +86,7 @@ export const getEventById = async (req: Request, res: Response, next: NextFuncti
 export const updateEvent = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
         const eventIdNum = Number(req.params.id);
-        const userId = getUserId(req);
+        const userId = req.user?.userId;
         const data = req.body;
 
         const event = await prisma.event.findUnique({ where: { id: eventIdNum } });
@@ -109,7 +114,7 @@ export const updateEvent = async (req: Request, res: Response, next: NextFunctio
 export const deleteEvent = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
         const eventIdNum = Number(req.params.id);
-        const userId = getUserId(req); 
+        const userId = req.user?.userId;
 
         const event = await prisma.event.findUnique({ where: { id: eventIdNum } });
 
@@ -129,13 +134,15 @@ export const deleteEvent = async (req: Request, res: Response, next: NextFunctio
 
 export const joinEvent = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
-        const eventsIdNum = Number(req.params.id);
-        const userId = getUserId(req);
+        const data: JoinEventDto = {
+            eventId: Number(req.params.id)
+        };
 
+        const userId = req.user?.userId;
         if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
         const event = await prisma.event.findUnique({
-            where: { id: eventsIdNum },
+            where: { id: data.eventId },
             include: { _count: { select: { participants: true } } }
         });
 
@@ -146,16 +153,29 @@ export const joinEvent = async (req: Request, res: Response, next: NextFunction)
         }
 
         const alreadyJoined = await prisma.participant.findUnique({
-            where: { userId_eventsId: { userId, eventsId: eventsIdNum } }
+            where: { 
+                userId_eventsId: { 
+                    userId: userId, 
+                    eventsId: data.eventId 
+                } 
+            }
         });
 
-        if (alreadyJoined) return res.status(400).json({ message: 'You are already a participant' });
+        if (alreadyJoined) {
+            return res.status(400).json({ message: 'You are already a participant' });
+        }
 
         const participant = await prisma.participant.create({
-            data: { eventsId: eventsIdNum, userId }
+            data: { 
+                eventsId: data.eventId, 
+                userId: userId 
+            }
         });
 
-        res.status(201).json(participant);
+        res.status(201).json({
+            message: 'Successfully joined the event',
+            participant
+        });
     } catch (error) {
         next(error);
     }
@@ -164,7 +184,7 @@ export const joinEvent = async (req: Request, res: Response, next: NextFunction)
 export const leaveEvent = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
         const eventsIdNum = Number(req.params.id);
-        const userId = getUserId(req);
+        const userId = req.user?.userId;
 
         if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
