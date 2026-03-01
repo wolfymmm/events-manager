@@ -5,6 +5,8 @@ import eventRoutes from './routes/event.routes';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './swagger';
 
 dotenv.config();
 
@@ -19,6 +21,7 @@ app.use('/events/:id', eventRoutes);
 app.use('/events/:id/join', eventRoutes);
 app.use('/events/:id/leave', eventRoutes);
 app.use('/users', userRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/test-db', async (req, res) => {
   try {

@@ -24,6 +24,8 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.14",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "yup": "^1.7.1"
@@ -32,10 +34,17 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "prisma": "^6.19.2"
   },
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./src/@types"] 
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

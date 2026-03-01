@@ -1,28 +1,43 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getUserEvents = async (req: Request, res: Response) => {
+export const getUserEvents = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
-        const userId = 4; // Тут потрібно отримати userId з токена (пізніше дороблю)
+        const userId = req.user?.userId;
+
         if (!userId) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return res.status(401).json({ message: 'Unauthorized: User ID not found in token' });
         }
+
         const events = await prisma.event.findMany({
             where: {
-                participants: { some: { userId } }
+                participants: {
+                    some: {
+                        userId: userId
+                    }
+                }
             },
-            include: { _count: {
-                select: { participants: true } 
-            }, 
-            organizer: {
-                select: { name: true }
-            }}
+            include: {
+                _count: {
+                    select: { participants: true }
+                },
+                organizer: {
+                    select: { 
+                        id: true,
+                        name: true,
+                        email: true 
+                    }
+                }
+            },
+            orderBy: {
+                date: 'asc' 
+            }
         });
+
         res.json(events);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error while fetching user events' });
+        next(error);
     }
 };
