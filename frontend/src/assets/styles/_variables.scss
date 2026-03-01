@@ -1,0 +1,18 @@
+// Кольори
+$primary-color: #2563eb; // Твій основний синій
+$secondary-color: #64748b;
+$error-color: #ef4444;
+$bg-color: #f8fafc;
+$text-color: #1e293b;
+$white: #ffffff;
+
+// Відступи та радіуси
+$border-radius: 12px;
+$transition: all 0.3s ease;
+
+// Міксин для центрованого флексу
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

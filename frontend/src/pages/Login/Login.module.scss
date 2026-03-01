@@ -1,0 +1,91 @@
+@import "../../assets/styles/variables";
+
+.authContainer {
+  @include flex-center;
+  min-height: calc(100vh - 80px); // Висота мінус навбар
+  background-color: $bg-color;
+  padding: 20px;
+}
+
+.authCard {
+  background: $white;
+  padding: 40px;
+  border-radius: $border-radius;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;
+  
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: $text-color;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  
+  p {
+    color: $secondary-color;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+}
+
+.formGroup {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: $text-color;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: $transition;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &.error {
+      border-color: $error-color;
+    }
+  }
+}
+
+.errorMessage {
+  color: $error-color;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.submitBtn {
+  width: 100%;
+  background-color: $primary-color;
+  color: $white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: darken($primary-color, 10%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
